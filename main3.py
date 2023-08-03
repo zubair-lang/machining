@@ -244,6 +244,10 @@ if __name__ == '__main__':
                     if check_bit(_machine_state,machine_states['MACHINE_INIT']):
                         logger.debug("First print !")
                         _machine_state = clear_bit(_machine_state,machine_states['MACHINE_INIT']) # Reset Init State
+                    _separator = ""
+                    if _lbl['GarPanelDesc'] == "FR" or _lbl['GarPanelDesc'] == "FR-WB":
+                        _separator = "/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/\\/"
+                        
                     params = {"TS":datetime.datetime.now().strftime("%d/%m %H:%M"),
                         "WorkOrder":_lbl['OrId'],
                         "PO":_lbl['ProductionOrderCode'],
@@ -257,7 +261,8 @@ if __name__ == '__main__':
                         "QRCode":_lbl['GroupID'],
                         "FLR":_lbl['FLRSrNo'],
                         "KIT": _lbl['Kit'],
-                        "SR": f"{_lbl['StrtPcs']} - {_lbl['EndPcs']}"
+                        "SR": f"{_lbl['StrtPcs']} - {_lbl['EndPcs']}",
+                        "Seperator": _separator
                         }
                     #print_btw_label(LABEL_PATH, PRINTER_NAME,params, 1)
                     for field, value in params.items():
