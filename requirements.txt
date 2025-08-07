@@ -1,2 +1,7 @@
 pip install --upgrade wabson.chafon-rfid
 pyodbc
+flask
+pywin32
+pyserial
+wabson.chafon-rfid
+flask-cors

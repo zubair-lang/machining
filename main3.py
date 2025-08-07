@@ -201,7 +201,7 @@ if __name__ == '__main__':
 
 
     ##### DB LINK AND LOAD######
-    _machinedb = MachineMSSQLServer('172.16.20.1', 'ActiveSooperWizerNCL', 'sa', 'wimetrix')
+    _machinedb = MachineMSSQLServer('172.16.21.255', 'ActiveSooperWizerNCL', 'sa', '%24Pt%24%403311')
     _lbldata = _machinedb.load_data()
     _labels = []
     _tbl_dt = []
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     for row in _lbldata:
         _lblt = row._asdict()
         _labels.append(_lblt)
-        _tbl_dt.append([RED + _lblt['RFID'] + RESET, _lblt['GroupID'], 'loaded',_lblt['CutNo'],_lblt['BundleCode'],_lblt['GarPanelDesc']])
+        _tbl_dt.append([RED + _lblt['RFID'] + RESET, _lblt['GroupID'], 'loaded',_lblt['CutNo'],_lblt['BundleCode'],_lblt['GarPanelDesc']+f" - {_lblt['StrtPcs']} - {_lblt['EndPcs']} - "+_lblt['Size']])
     
     table.clear_rows()
     table.add_rows(_tbl_dt)
@@ -269,7 +269,7 @@ if __name__ == '__main__':
                         bt_format_g.SetNamedSubStringValue(field, value)
                     bt_format_g.PrintOut(False, False)
                     _last_print_t = time.perf_counter()
-                    update_print_table(idx,[BLUE + '>>>>>>>>>'  + RESET, '__', 'Printing',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']],_tbl_dt,table,True)
+                    update_print_table(idx,[BLUE + '>>>>>>>>>'  + RESET, '__', 'Printing',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']+f" - {_lbl['StrtPcs']} - {_lbl['EndPcs']} - "+_lbl['Size']],_tbl_dt,table,True)
                     _machine_state = set_bit(_machine_state,machine_states['MACHINE_PRINTED_WAITING_PASTING'])
                     _machine_state = clear_bit(_machine_state,machine_states['MACHINE_SHOULD_PRINT']) # Reset Ready to Print Sig
                     _machine_state = clear_bit(_machine_state,machine_states['MACHINE_READY_TO_PRINT'])
@@ -351,7 +351,7 @@ if __name__ == '__main__':
                         sys.exit()
                 ################################
                 else:
-                    update_print_table(idx,[BLUE + '>>>>>>>>>'  + RESET,GREEN +  _qr + RESET, 'QR Read',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']],_tbl_dt,table,True)
+                    update_print_table(idx,[BLUE + '>>>>>>>>>'  + RESET,GREEN +  _qr + RESET, 'QR Read',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']+f" - {_lbl['StrtPcs']} - {_lbl['EndPcs']} - "+_lbl['Size']],_tbl_dt,table,True)
                     _machine_state = set_bit(_machine_state,machine_states['MACHINE_BARCODE_READ']) # Barcode Pasted
                     _machine_state = clear_bit(_machine_state,machine_states['MACHINE_LABEL_PASTED']) # Barcode Pasted
                     _barcode_link.reset_input_buffer()
@@ -410,18 +410,18 @@ if __name__ == '__main__':
                     _machine_state = clear_bit(_machine_state,machine_states['MACHINE_BARCODE_READ'])     
 
                 if _st is None or _st[0] == 1:
-                    update_print_table(idx,[RED + 'XXXXXXXXX'  + RESET,GREEN +  _qr + RESET, 'No Detection',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']],_tbl_dt,table,True)
+                    update_print_table(idx,[RED + 'XXXXXXXXX'  + RESET,GREEN +  _qr + RESET, 'No Detection',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']+f" - {_lbl['StrtPcs']} - {_lbl['EndPcs']} - "+_lbl['Size']],_tbl_dt,table,True)
                     logger.error(f"No RFID Detected !")
                     _machine_state = clear_bit(_machine_state,machine_states['MACHINE_BARCODE_READ']) 
                 elif not pattern.match(_st[1]):
-                    update_print_table(idx,[RED + _st[1]  + RESET,GREEN +  _qr + RESET, 'Bad EPC',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']],_tbl_dt,table,True)
+                    update_print_table(idx,[RED + _st[1]  + RESET,GREEN +  _qr + RESET, 'Bad EPC',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']+f" - {_lbl['StrtPcs']} - {_lbl['EndPcs']} - "+_lbl['Size']],_tbl_dt,table,True)
                     logger.error(f"BAD EPC Detected !")
                     _machine_state = clear_bit(_machine_state,machine_states['MACHINE_BARCODE_READ']) 
                     logger.debug(get_set_bits(_machine_state))
 
                 elif _st[1] in _card_mappings:
                     _rejected_wait = True
-                    update_print_table(idx,[RED + _st[1]  + RESET,GREEN +  _qr + RESET, 'Same Card Again',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']],_tbl_dt,table,True)
+                    update_print_table(idx,[RED + _st[1]  + RESET,GREEN +  _qr + RESET, 'Same Card Again',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']+f" - {_lbl['StrtPcs']} - {_lbl['EndPcs']} - "+_lbl['Size']],_tbl_dt,table,True)
                     logger.error(f"Previous card read Check Nearby !")
                     _machine_state = clear_bit(_machine_state,machine_states['MACHINE_BARCODE_READ']) 
                     logger.debug(get_set_bits(_machine_state))
@@ -443,7 +443,7 @@ if __name__ == '__main__':
                     _machinedb.save_id_to_file('id.txt',_lbl['ID'])
                     logger.debug(f"Passed {_st[1]}")
                     _stats['printed'] = _stats['printed'] + 1
-                    update_print_table(idx,[GREEN + _st[1]  + RESET,GREEN +  _qr + RESET, 'SUCCESS',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']],_tbl_dt,table,True)
+                    update_print_table(idx,[GREEN + _st[1]  + RESET,GREEN +  _qr + RESET, 'SUCCESS',_lbl['CutNo'],_lbl['BundleCode'],_lbl['GarPanelDesc']+f" - {_lbl['StrtPcs']} - {_lbl['EndPcs']} - "+_lbl['Size']],_tbl_dt,table,True)
                     break
 
             if _rejected and int((time.perf_counter() - _last_paste_t)* 100 > REJECT_DELAY):

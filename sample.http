@@ -1,0 +1,23 @@
+@hostname = localhost
+@port = 5000
+@api_path = print_label
+
+### Send a label print request with the new data format
+# This request sends a JSON payload with fields like ItemCode, RollNo, etc.
+# to the /print_label endpoint for synchronous processing.
+POST http://{{hostname}}:{{port}}/{{api_path}}
+Content-Type: application/json
+
+{
+    "WorkOrder": "WO-778899",
+    "COLOR": "Royal Blue",
+    "LotNo": "L-54321",
+    "QRCode": "ITEM-RB-ROLL-123-A",
+    "Roll": "A",
+    "RollNo": "123",
+    "Supplier": "Global Textiles Inc.",
+    "TS": "21/10/2023 14:35",
+    "Length": "150.5 M",
+    "Width": "1.2 M",
+    "ItemCode": "FABRIC-001-RB"
+}
